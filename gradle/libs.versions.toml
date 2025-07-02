@@ -1,6 +1,6 @@
 [versions]
 library-group = "io.github.remzoo.piwikprokmp"
-library-version = "1.0.0"
+library-version = "1.0.1"
 
 android = "8.5.2"
 kotlin = "2.2.0"
