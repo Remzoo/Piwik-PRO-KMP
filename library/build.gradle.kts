@@ -1,86 +1,80 @@
-import com.vanniktech.maven.publish.SonatypeHost
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
+import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFramework
 
 plugins {
-    alias(libs.plugins.kotlinMultiplatform)
-    alias(libs.plugins.androidLibrary)
-    alias(libs.plugins.vanniktech.mavenPublish)
+    alias(commonlibs.plugins.kotlin.multiplatform)
+    alias(commonlibs.plugins.android.library)
+    alias(commonlibs.plugins.kotlin.cocoapods)
 }
 
-group = "io.github.kotlin"
-version = "1.0.0"
+group = commonlibs.versions.library.group.get()
+version = commonlibs.versions.library.version.get()
 
 kotlin {
-    jvm()
     androidTarget {
         publishLibraryVariants("release")
         @OptIn(ExperimentalKotlinGradlePluginApi::class)
         compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_11)
+            jvmTarget.set(JvmTarget.JVM_17)
         }
     }
-    iosX64()
-    iosArm64()
-    iosSimulatorArm64()
-    linuxX64()
+
+    val xcframeworkName = "piwikprokmp"
+    val xcf = XCFramework(xcframeworkName)
+    listOf(
+        iosX64(),
+        iosArm64(),
+        iosSimulatorArm64()
+    ).forEach {
+        it.binaries.framework {
+            baseName = xcframeworkName
+            binaryOption("bundleId", "io.github.remzoo.$xcframeworkName")
+            xcf.add(this)
+            isStatic = true
+        }
+    }
+
+    cocoapods {
+        version = "2.0"
+        ios.deploymentTarget = "16.0"
+
+        pod("PiwikPROSDK") {
+            version = "2.1.1"
+        }
+    }
 
     sourceSets {
-        val commonMain by getting {
+        androidMain {
             dependencies {
-                //put your multiplatform dependencies here
+                implementation(commonlibs.piwik)
             }
         }
+
+        commonMain {
+            dependencies {
+                implementation(commonlibs.kotlin.stdlib)
+            }
+        }
+
         val commonTest by getting {
             dependencies {
-                implementation(libs.kotlin.test)
+                implementation(commonlibs.kotlin.test)
             }
         }
     }
 }
 
 android {
-    namespace = "org.jetbrains.kotlinx.multiplatform.library.template"
-    compileSdk = libs.versions.android.compileSdk.get().toInt()
+    namespace = "io.github.remzoo.piwikprokmp"
+    compileSdk = commonlibs.versions.android.compileSdk.get().toInt()
+
     defaultConfig {
-        minSdk = libs.versions.android.minSdk.get().toInt()
+        minSdk = commonlibs.versions.android.minSdk.get().toInt()
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
-    }
-}
-
-mavenPublishing {
-    publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
-
-    signAllPublications()
-
-    coordinates(group.toString(), "library", version.toString())
-
-    pom {
-        name = "My library"
-        description = "A library."
-        inceptionYear = "2024"
-        url = "https://github.com/kotlin/multiplatform-library-template/"
-        licenses {
-            license {
-                name = "XXX"
-                url = "YYY"
-                distribution = "ZZZ"
-            }
-        }
-        developers {
-            developer {
-                id = "XXX"
-                name = "YYY"
-                url = "ZZZ"
-            }
-        }
-        scm {
-            url = "XXX"
-            connection = "YYY"
-            developerConnection = "ZZZ"
-        }
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 }

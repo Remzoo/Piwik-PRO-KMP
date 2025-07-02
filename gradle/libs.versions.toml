@@ -1,13 +1,19 @@
 [versions]
-agp = "8.5.2"
-kotlin = "2.1.10"
+library-group = "io.github.remzoo.piwikprokmp"
+library-version = "1.0.0"
+
+android = "8.5.2"
+kotlin = "2.2.0"
 android-minSdk = "24"
 android-compileSdk = "34"
+piwik="2.1.0"
 
 [libraries]
+kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib-common", version.ref = "kotlin" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
+piwik = { module = "pro.piwik:sdk-framework-android", version.ref = "piwik"}
 
 [plugins]
-androidLibrary = { id = "com.android.library", version.ref = "agp" }
-kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
-vanniktech-mavenPublish = { id = "com.vanniktech.maven.publish", version = "0.29.0" }
+android-library = { id = "com.android.library", version.ref = "android" }
+kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+kotlin-cocoapods = { id = "org.jetbrains.kotlin.native.cocoapods", version.ref = "kotlin" }
