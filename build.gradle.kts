@@ -1,5 +1,5 @@
 plugins {
-    alias(libs.plugins.androidLibrary) apply false
-    alias(libs.plugins.kotlinMultiplatform) apply  false
-    alias(libs.plugins.vanniktech.mavenPublish) apply false
+    alias(commonlibs.plugins.android.library) apply false
+    alias(commonlibs.plugins.kotlin.multiplatform) apply  false
+    alias(commonlibs.plugins.kotlin.cocoapods) apply false
 }
